@@ -47,8 +47,6 @@ void setup() {
 void loop() {
 
   for(int i=1; i<17; i++) {
-    TFTscreen.background(255, 255, 255);
-
     // string for the incremented number (i)
     char *num;
     // string for the complete file path
@@ -117,6 +115,6 @@ void loop() {
     // free the allocated space
     free(num);
     free(full_path);
-    //delay(5000);
+    delay(500);
   }
 }
