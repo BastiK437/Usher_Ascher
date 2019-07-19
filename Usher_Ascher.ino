@@ -11,7 +11,7 @@
 #define RST    8
 #define BUTTON 3
 
-#define DEBUG 1
+#define DEBUG 0
 #define FILE_PATH_LENGTH 12
 #define EXTENSION_LENGTH  4
 
@@ -69,10 +69,11 @@ void setup() {
     entry.close();
     AVAILABLE_PICTURES++;
   }
+  dir.close();
 
 #if DEBUG
-    Serial.print("Vorhandene Bilder: ");
-    Serial.println(AVAILABLE_PICTURES);
+  Serial.print("Vorhandene Bilder: ");
+  Serial.println(AVAILABLE_PICTURES);
 #endif
 
   global_cnt = 0;
@@ -80,7 +81,7 @@ void setup() {
 
 // arduino main loop
 void loop() {
-
+  // loop through all available pictures
   for(int i=1; i<AVAILABLE_PICTURES+1; i++) {
     global_cnt++;
     
