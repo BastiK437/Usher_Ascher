@@ -23,8 +23,8 @@ TFT TFTscreen = TFT(LCD_CS, DC, RST);
 // this variable represents the image to be drawn on screen
 PImage usher_pic;
 
-const char file_name[13] = "Usher/usher_";
-const char extension[5] = ".bmp";
+const char file_name[] = "Usher/usher_";
+const char extension[] = ".bmp";
 const char test_path[18] = "Usher/usher_1.bmp";
 int global_cnt;
 int AVAILABLE_PICTURES;
