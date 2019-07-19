@@ -5,48 +5,91 @@
 #include <String.h>
 
 // defines
-#define sd_cs  7
-#define lcd_cs 10
-#define dc     9
-#define rst    8
+#define SD_CS  7
+#define LCD_CS 10
+#define DC     9
+#define RST    8
+#define BUTTON 3
 
-#define debug 1
+#define DEBUG 1
 #define FILE_PATH_LENGTH 12
 #define EXTENSION_LENGTH  4
 
+// delay between two pictures
+#define DIASHOW_DELAY_MS 10000
+
 // global vars
-TFT TFTscreen = TFT(lcd_cs, dc, rst);
+TFT TFTscreen = TFT(LCD_CS, DC, RST);
 // this variable represents the image to be drawn on screen
 PImage usher_pic;
 
 const char file_name[13] = "Usher/usher_";
 const char extension[5] = ".bmp";
+const char test_path[18] = "Usher/usher_1.bmp";
+int global_cnt;
+int AVAILABLE_PICTURES;
 
 
 // arduino setup
 void setup() {
+
+  pinMode(BUTTON, INPUT_PULLUP);
   // initialize the GLCD and show a message
   // asking the user to open the serial line
   TFTscreen.begin();
   TFTscreen.background(255, 255, 255);
 
-#if debug
+#if DEBUG
   Serial.begin(9600);
 #endif
 
   // try to access the SD card. If that fails (e.g.
   // no card present), the setup process will stop.
-  if (!SD.begin(sd_cs)) {
+  if (!SD.begin(SD_CS)) {
     TFTscreen.stroke(0, 0, 0);
     TFTscreen.println(F("SD initialization failed"));
     return;
   }
+
+  // count available pictures
+
+  File dir = SD.open("/Usher/");
+  AVAILABLE_PICTURES = 0;
+  while (true) {
+    File entry =  dir.openNextFile();
+    if (! entry) {
+      // no more files
+      break;
+    }
+    
+#if DEBUG
+    Serial.println(entry.name());
+#endif
+
+    entry.close();
+    AVAILABLE_PICTURES++;
+  }
+
+#if DEBUG
+    Serial.print("Vorhandene Bilder: ");
+    Serial.println(AVAILABLE_PICTURES);
+#endif
+
+  global_cnt = 0;
 }
 
 // arduino main loop
 void loop() {
 
-  for(int i=1; i<17; i++) {
+  for(int i=1; i<AVAILABLE_PICTURES+1; i++) {
+    global_cnt++;
+    
+#if DEBUG
+    Serial.println("");
+    Serial.println("---------------------------------------------------");
+    Serial.print("Global Cnt: ");
+    Serial.println(global_cnt);
+#endif
     // string for the incremented number (i)
     char *num;
     // string for the complete file path
@@ -67,17 +110,6 @@ void loop() {
         }
         num[1] = n + '0';
         num[2] = '\0';
-    }else if( i < 1000 ) {
-        // TODO
-//        full_path = (char *) malloc(FILE_PATH_LENGTH + EXTENSION_LENGTH + 3);
-//        num = (char *) malloc(4);
-//        num[0] = (i/10) + '0';
-//        int n = i;
-//        while(n>=10) {
-//          n -= 10;
-//        }
-//        num[1] = n + '0';
-//        num[2] = '\0';
     }
     
     // create the full path for the file
@@ -85,7 +117,7 @@ void loop() {
     strcat(full_path, num);
     strcat(full_path, extension);
 
-#if debug
+#if DEBUG
     Serial.print("|");
     Serial.print(full_path);   
     Serial.println("|");
@@ -98,23 +130,35 @@ void loop() {
       TFTscreen.print(F("failed to open pic"));
       TFTscreen.println(num);
       
-    #if debug
+#if DEBUG
       Serial.print("failed to open pic:");
       Serial.println(full_path);
-    #endif
+#endif
     
       return;
     }
     
-#if debug
+#if DEBUG
     Serial.println("draw image");
+    Serial.println("---------------------------------------------------");
 #endif
   
     TFTscreen.image(usher_pic, 0, 0);
+    usher_pic.close();
 
     // free the allocated space
     free(num);
     free(full_path);
-    delay(500);
+
+    diashow_delay();
+  }
+}
+
+void diashow_delay() {
+  for(int i=0; i<DIASHOW_DELAY_MS/10; i++) {
+    if(digitalRead(BUTTON) == LOW) {
+      return;
+    }
+    delay(10);
   }
 }
