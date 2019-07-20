@@ -34,6 +34,7 @@ int AVAILABLE_PICTURES;
 void setup() {
 
   pinMode(BUTTON, INPUT_PULLUP);
+  pinMode(2, INPUT);
   // initialize the GLCD and show a message
   // asking the user to open the serial line
   TFTscreen.begin();
