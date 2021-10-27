@@ -1,7 +1,31 @@
+/* 
+ * USHER_ASCHER
+ * AUTHOR: Bastian Krammer 
+ *  
+ * WIRING
+ * LED-           (dont need to be wired)
+ * LED+   -> 3.3V
+ * SD_CS  -> D7   (could be anything, see defines)
+ * MOSI   -> D11  (MOSI and SDA need to be connected)
+ * MISO   -> D12 
+ * SCK    -> D13  (SCK and SCL need to be connected)
+ * CS     -> D10  (could be anything, see defines) 
+ * SCL    -> SCK
+ * SDA    -> MOSI
+ * A0     -> D9   (could be anything, see defines)
+ * RESET  -> D8   (could be anything, see defines)
+ * VCC    -> 5V
+ * GND    -> GND
+ * 
+ * 
+ */
+
+
 // includes 
 #include <SPI.h>
 #include <SD.h>
-#include <TFT.h>  // Arduino LCD library
+#include <TFT.h>  // Arduino LCD library    
+                  // SD warning can be ignored, just recompile
 #include <String.h>
 
 // defines
@@ -49,6 +73,9 @@ void setup() {
   if (!SD.begin(SD_CS)) {
     TFTscreen.stroke(0, 0, 0);
     TFTscreen.println(F("SD initialization failed"));
+#if DEBUG
+    Serial.println("SD initialization failed");
+#endif
     return;
   }
 
